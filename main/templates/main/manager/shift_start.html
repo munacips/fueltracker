@@ -1,0 +1,33 @@
+{% extends 'main/layout.html' %}
+
+{% block title %}Start Shift | Gillian Bevan Fuel Tracker{% endblock %}
+
+{% block content %}
+<section class="narrow-panel">
+    <div class="panel-heading">
+        <p class="section-kicker">Manager workflow</p>
+        <h1>Start shift</h1>
+        <p>{{ today }} - select the manager on duty and the shift type.</p>
+    </div>
+
+    <form method="post" class="form-panel">
+        {% csrf_token %}
+        {% if form.non_field_errors %}
+            <div class="form-errors">{{ form.non_field_errors }}</div>
+        {% endif %}
+        <div class="field-grid">
+            <div class="field-group">
+                <label for="{{ form.manager.id_for_label }}">{{ form.manager.label }}</label>
+                {{ form.manager }}
+                {{ form.manager.errors }}
+            </div>
+            <div class="field-group">
+                <label for="{{ form.shift_type.id_for_label }}">{{ form.shift_type.label }}</label>
+                {{ form.shift_type }}
+                {{ form.shift_type.errors }}
+            </div>
+        </div>
+        <button class="button button-primary" type="submit">Continue to meter readings</button>
+    </form>
+</section>
+{% endblock %}

@@ -1,0 +1,74 @@
+{% extends 'main/layout.html' %}
+
+{% block title %}Tank Returns | Gillian Bevan Fuel Tracker{% endblock %}
+
+{% block content %}
+<section class="screen-header">
+    <div>
+        <p class="section-kicker">Step 3 of 4</p>
+        <h1>Return to tank</h1>
+        <p>Record fuel returned after a pump issue. Leave blank if none.</p>
+    </div>
+</section>
+
+<form method="post" class="table-form">
+    {% csrf_token %}
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th class="number">Litres returned</th>
+                    <th>Related pump</th>
+                    <th>Note</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                    <tr>
+                        <td><strong>{{ product.name }}</strong></td>
+                        <td class="number">
+                            <input type="number" name="returned_{{ product.id }}" min="0" step="0.01" inputmode="decimal" aria-label="Litres returned for {{ product.name }}">
+                        </td>
+                        <td>
+                            <select name="pump_{{ product.id }}" aria-label="Pump for {{ product.name }} return">
+                                <option value="">No pump</option>
+                                {% for pump in pumps %}
+                                    {% if pump.product_id == product.id %}
+                                        <option value="{{ pump.id }}">{{ pump }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <td>
+                            <input type="text" name="note_{{ product.id }}" maxlength="255" aria-label="Return note for {{ product.name }}">
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="4" class="empty-state">No products are configured.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="form-actions">
+        <button class="button button-primary" type="submit">Save and continue</button>
+    </div>
+</form>
+
+<section class="detail-panel">
+    <h2>Recorded this shift</h2>
+    <div class="simple-list">
+        {% for tank_return in existing_returns %}
+            <div class="list-row">
+                <strong>{{ tank_return.product }}</strong>
+                <span>{{ tank_return.litres_returned|floatformat:2 }} L</span>
+                <span>{{ tank_return.pump|default:"No pump" }}</span>
+            </div>
+        {% empty %}
+            <p class="empty-state">No tank returns recorded yet.</p>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

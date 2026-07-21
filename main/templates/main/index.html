@@ -1,6 +1,53 @@
 {% extends 'main/layout.html' %}
 
+{% block title %}Home | Gillian Bevan Fuel Tracker{% endblock %}
+
 {% block content %}
-    <h1>Welcome to the Gillian Bevan Fuel Tracker</h1>
-    <p>This is a simple fuel tracker application.</p>
+<section class="hero-panel">
+    <div>
+        <p class="section-kicker">Reliable Energy. Trusted Quality.</p>
+        <h1>Fuel station shift control</h1>
+        <p class="lead">
+            Capture meter readings, deliveries, tank returns, and cash reconciliation
+            from one clear station workflow.
+        </p>
+    </div>
+    <div class="hero-actions">
+        {% if open_shift %}
+            <div class="status-card status-open">
+                <span class="status-dot"></span>
+                <div>
+                    <strong>Open shift</strong>
+                    <span>{{ open_shift.shift_date }} - {{ open_shift.get_shift_type_display }} with {{ open_shift.manager }}</span>
+                </div>
+            </div>
+            <a class="button button-primary" href="{% url 'main:meter_entry' open_shift.id %}">Continue shift</a>
+            <a class="button button-secondary" href="{% url 'main:shift_close' open_shift.id %}">Close shift</a>
+        {% else %}
+            <div class="status-card">
+                <span class="status-dot status-muted"></span>
+                <div>
+                    <strong>No open shift</strong>
+                    <span>Start the day or night shift to begin capturing sales.</span>
+                </div>
+            </div>
+            <a class="button button-primary" href="{% url 'main:shift_start' %}">Start shift</a>
+        {% endif %}
+    </div>
+</section>
+
+<section class="quick-grid" aria-label="Quick links">
+    <a class="quick-link" href="{% url 'main:shift_start' %}">
+        <span>Manager entry</span>
+        <strong>Start or resume a shift</strong>
+    </a>
+    <a class="quick-link" href="{% url 'main:dashboard' %}">
+        <span>Admin overview</span>
+        <strong>Stock, prices, and variances</strong>
+    </a>
+    <a class="quick-link" href="{% url 'main:reports' %}">
+        <span>Reports</span>
+        <strong>Filter and export closed shifts</strong>
+    </a>
+</section>
 {% endblock %}

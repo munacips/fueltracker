@@ -1,0 +1,26 @@
+{% extends 'main/layout.html' %}
+
+{% block title %}PIN Access | Gillian Bevan Fuel Tracker{% endblock %}
+
+{% block content %}
+<section class="narrow-panel">
+    <div class="panel-heading">
+        <p class="section-kicker">Manager access</p>
+        <h1>Enter site PIN</h1>
+        <p>Unlock the station entry screens for this browser session.</p>
+    </div>
+
+    <form method="post" class="form-panel">
+        {% csrf_token %}
+        {% if form.non_field_errors %}
+            <div class="form-errors">{{ form.non_field_errors }}</div>
+        {% endif %}
+        <div class="field-group">
+            <label for="{{ form.pin.id_for_label }}">{{ form.pin.label }}</label>
+            {{ form.pin }}
+            {{ form.pin.errors }}
+        </div>
+        <button class="button button-primary button-full" type="submit">Unlock screens</button>
+    </form>
+</section>
+{% endblock %}

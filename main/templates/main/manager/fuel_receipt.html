@@ -1,0 +1,67 @@
+{% extends 'main/layout.html' %}
+
+{% block title %}Fuel Receipts | Gillian Bevan Fuel Tracker{% endblock %}
+
+{% block content %}
+<section class="screen-header">
+    <div>
+        <p class="section-kicker">Step 2 of 4</p>
+        <h1>Fuel received</h1>
+        <p>Record supplier deliveries for {{ shift.shift_date }} - {{ shift.get_shift_type_display }}. Leave blank if none.</p>
+    </div>
+</section>
+
+<form method="post" class="table-form">
+    {% csrf_token %}
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th class="number">Litres received</th>
+                    <th>Supplier</th>
+                    <th>Note</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                    <tr>
+                        <td><strong>{{ product.name }}</strong></td>
+                        <td class="number">
+                            <input type="number" name="received_{{ product.id }}" min="0" step="0.01" inputmode="decimal" aria-label="Litres received for {{ product.name }}">
+                        </td>
+                        <td>
+                            <input type="text" name="supplier_{{ product.id }}" maxlength="150" aria-label="Supplier for {{ product.name }}">
+                        </td>
+                        <td>
+                            <input type="text" name="note_{{ product.id }}" maxlength="255" aria-label="Note for {{ product.name }}">
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="4" class="empty-state">No products are configured.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="form-actions">
+        <button class="button button-primary" type="submit">Save and continue</button>
+    </div>
+</form>
+
+<section class="detail-panel">
+    <h2>Recorded this shift</h2>
+    <div class="simple-list">
+        {% for receipt in existing_receipts %}
+            <div class="list-row">
+                <strong>{{ receipt.product }}</strong>
+                <span>{{ receipt.litres_received|floatformat:2 }} L</span>
+                <span>{{ receipt.supplier|default:"No supplier" }}</span>
+            </div>
+        {% empty %}
+            <p class="empty-state">No fuel receipts recorded yet.</p>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

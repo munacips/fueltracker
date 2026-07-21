@@ -1,0 +1,81 @@
+{% extends 'main/layout.html' %}
+
+{% block title %}Admin Dashboard | Gillian Bevan Fuel Tracker{% endblock %}
+
+{% block content %}
+<section class="screen-header">
+    <div>
+        <p class="section-kicker">Admin overview</p>
+        <h1>Dashboard</h1>
+        <p>Current stock position, active prices, and recent closed shift variances.</p>
+    </div>
+    <div class="header-actions">
+        <a class="button button-secondary" href="{% url 'main:price_edit' %}">Edit prices</a>
+        <a class="button button-primary" href="{% url 'main:reports' %}">View reports</a>
+    </div>
+</section>
+
+<section class="metric-grid">
+    {% for item in stock_data %}
+        <article class="metric-card">
+            <span>{{ item.product.name }}</span>
+            <strong>
+                {% if item.tank_balance is not None %}
+                    {{ item.tank_balance|floatformat:2 }} L
+                {% else %}
+                    No snapshot
+                {% endif %}
+            </strong>
+            <small>
+                Price:
+                {% if item.price is not None %}
+                    {{ item.price|floatformat:2 }} / L
+                {% else %}
+                    Not set
+                {% endif %}
+            </small>
+        </article>
+    {% empty %}
+        <p class="empty-state">No products are configured.</p>
+    {% endfor %}
+</section>
+
+<section class="detail-panel">
+    <div class="panel-heading-row">
+        <h2>Recent closed shifts</h2>
+        <a href="{% url 'main:reports' %}">All reports</a>
+    </div>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Shift</th>
+                    <th>Manager</th>
+                    <th class="number">Cash due</th>
+                    <th class="number">Submitted</th>
+                    <th class="number">Variance</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for shift in recent_shifts %}
+                    <tr>
+                        <td>{{ shift.shift_date }}</td>
+                        <td>{{ shift.get_shift_type_display }}</td>
+                        <td>{{ shift.manager }}</td>
+                        <td class="number">{{ shift.cash_due_total|floatformat:2 }}</td>
+                        <td class="number">{{ shift.cash_submitted|floatformat:2 }}</td>
+                        <td class="number {% if shift.variance < 0 %}text-danger{% elif shift.variance > 0 %}text-success{% endif %}">
+                            {{ shift.variance|floatformat:2 }}
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="6" class="empty-state">No closed shifts yet.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

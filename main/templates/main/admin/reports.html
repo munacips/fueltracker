@@ -1,0 +1,76 @@
+{% extends 'main/layout.html' %}
+
+{% block title %}Reports | Gillian Bevan Fuel Tracker{% endblock %}
+
+{% block content %}
+<section class="screen-header">
+    <div>
+        <p class="section-kicker">Admin reports</p>
+        <h1>Closed shift reports</h1>
+        <p>Filter by date range and export the current report to Excel.</p>
+    </div>
+    <a class="button button-secondary" href="{% url 'main:dashboard' %}">Back to dashboard</a>
+</section>
+
+<form method="get" class="filter-bar">
+    <div class="field-group">
+        <label for="from">From</label>
+        <input id="from" type="date" name="from" value="{{ date_from }}">
+    </div>
+    <div class="field-group">
+        <label for="to">To</label>
+        <input id="to" type="date" name="to" value="{{ date_to }}">
+    </div>
+    <button class="button button-primary" type="submit">Apply filters</button>
+    <a class="button button-secondary" href="{% url 'main:export_excel' %}?from={{ date_from }}&amp;to={{ date_to }}">Export Excel</a>
+</form>
+
+<section class="detail-panel">
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Shift</th>
+                    <th>Manager</th>
+                    <th class="number">Cash due</th>
+                    <th class="number">Cash submitted</th>
+                    <th class="number">Variance</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for shift in page_obj %}
+                    <tr>
+                        <td>{{ shift.shift_date }}</td>
+                        <td>{{ shift.get_shift_type_display }}</td>
+                        <td>{{ shift.manager }}</td>
+                        <td class="number">{{ shift.cash_due_total|floatformat:2 }}</td>
+                        <td class="number">{{ shift.cash_submitted|floatformat:2 }}</td>
+                        <td class="number {% if shift.variance < 0 %}text-danger{% elif shift.variance > 0 %}text-success{% endif %}">
+                            {{ shift.variance|floatformat:2 }}
+                        </td>
+                        <td><span class="badge">{{ shift.status }}</span></td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="7" class="empty-state">No closed shifts match this filter.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if page_obj.paginator.num_pages > 1 %}
+        <nav class="pagination" aria-label="Report pages">
+            {% if page_obj.has_previous %}
+                <a href="?from={{ date_from }}&amp;to={{ date_to }}&amp;page={{ page_obj.previous_page_number }}">Previous</a>
+            {% endif %}
+            <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+            {% if page_obj.has_next %}
+                <a href="?from={{ date_from }}&amp;to={{ date_to }}&amp;page={{ page_obj.next_page_number }}">Next</a>
+            {% endif %}
+        </nav>
+    {% endif %}
+</section>
+{% endblock %}

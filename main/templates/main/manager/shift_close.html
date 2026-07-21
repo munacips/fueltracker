@@ -1,0 +1,31 @@
+{% extends 'main/layout.html' %}
+
+{% block title %}Close Shift | Gillian Bevan Fuel Tracker{% endblock %}
+
+{% block content %}
+<section class="narrow-panel">
+    <div class="panel-heading">
+        <p class="section-kicker">Step 4 of 4</p>
+        <h1>Close shift</h1>
+        <p>{{ shift.shift_date }} - {{ shift.get_shift_type_display }} with {{ shift.manager }}</p>
+    </div>
+
+    <div class="summary-strip">
+        <span>System cash due</span>
+        <strong>{{ cash_due_total|floatformat:2 }}</strong>
+    </div>
+
+    <form method="post" class="form-panel">
+        {% csrf_token %}
+        {% if form.non_field_errors %}
+            <div class="form-errors">{{ form.non_field_errors }}</div>
+        {% endif %}
+        <div class="field-group">
+            <label for="{{ form.cash_submitted.id_for_label }}">Cash submitted</label>
+            {{ form.cash_submitted }}
+            {{ form.cash_submitted.errors }}
+        </div>
+        <button class="button button-primary button-full" type="submit">Finalize shift</button>
+    </form>
+</section>
+{% endblock %}

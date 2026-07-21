@@ -1,0 +1,49 @@
+{% extends 'main/layout.html' %}
+
+{% block title %}Edit Prices | Gillian Bevan Fuel Tracker{% endblock %}
+
+{% block content %}
+<section class="screen-header">
+    <div>
+        <p class="section-kicker">Admin pricing</p>
+        <h1>Set fuel price</h1>
+        <p>New prices apply to future meter entries. Historical shift totals remain unchanged.</p>
+    </div>
+    <a class="button button-secondary" href="{% url 'main:dashboard' %}">Back to dashboard</a>
+</section>
+
+<section class="split-layout">
+    <form method="post" class="form-panel">
+        {% csrf_token %}
+        {% if form.non_field_errors %}
+            <div class="form-errors">{{ form.non_field_errors }}</div>
+        {% endif %}
+        <div class="field-group">
+            <label for="{{ form.product.id_for_label }}">{{ form.product.label }}</label>
+            {{ form.product }}
+            {{ form.product.errors }}
+        </div>
+        <div class="field-group">
+            <label for="{{ form.price_per_litre.id_for_label }}">{{ form.price_per_litre.label }}</label>
+            {{ form.price_per_litre }}
+            {{ form.price_per_litre.errors }}
+        </div>
+        <button class="button button-primary" type="submit">Save price</button>
+    </form>
+
+    <div class="detail-panel flush-panel">
+        <h2>Recent price history</h2>
+        <div class="simple-list">
+            {% for price in price_history %}
+                <div class="list-row">
+                    <strong>{{ price.product }}</strong>
+                    <span>{{ price.price_per_litre|floatformat:2 }} / L</span>
+                    <span>{{ price.effective_from|date:"Y-m-d H:i" }}</span>
+                </div>
+            {% empty %}
+                <p class="empty-state">No prices have been recorded.</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}
